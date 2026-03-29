@@ -3,105 +3,71 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advanced Calculator</title>
+  <title>Scientific Calculator</title>
   <style>
     :root {
-      --primary: #667eea;
-      --accent: #764ba2;
-      --custom-color: #9b59b6;   /* Default Purple - Change this easily */
+      --bg-color: #1e1e2f;
+      --display-bg: #0f0f1a;
+      --text-color: white;
+      --sidebar-bg: #25253a;
+    }
+
+    body.light {
+      --bg-color: #f8f9fa;
+      --display-bg: #ffffff;
+      --text-color: #333333;
+      --sidebar-bg: #e9ecef;
     }
 
     body {
       font-family: 'Segoe UI', Arial, sans-serif;
-      background: linear-gradient(135deg, var(--primary), var(--accent));
+      background: linear-gradient(135deg, #667eea, #764ba2);
       margin: 0;
       padding: 20px;
       min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
-    .container {
-      max-width: 1150px;
-      margin: 0 auto;
-      background: #1e1e2f;
+    .calculator {
+      background: var(--bg-color);
       border-radius: 20px;
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-      overflow: hidden;
+      padding: 25px;
+      width: 460px;
+      box-shadow: 0 25px 60px rgba(0,0,0,0.5);
+      color: var(--text-color);
     }
 
     .header {
-      padding: 15px 25px;
-      background: #25253a;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      color: white;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-
-    .tabs {
-      display: flex;
-      flex-wrap: wrap;
-      background: #25253a;
-      border-bottom: 1px solid #333;
-    }
-
-    .tab {
-      padding: 14px 20px;
-      background: none;
-      border: none;
-      color: #ccc;
-      cursor: pointer;
-      font-size: 1rem;
-    }
-
-    .tab.active {
-      background: #1e1e2f;
-      color: white;
-      border-bottom: 3px solid #00d26a;
-    }
-
-    .content {
-      padding: 25px;
-      display: none;
-    }
-
-    .content.active { 
-      display: block; 
-    }
-
-    .calculator-grid {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
-
-    .main-calc {
-      flex: 1;
-      max-width: 400px;
+      margin-bottom: 20px;
     }
 
     .display {
-      background: #0f0f1a;
-      color: white;
-      font-size: 2.8rem;
+      background: var(--display-bg);
+      color: var(--text-color);
+      font-size: 3rem;
       text-align: right;
-      padding: 20px;
-      border-radius: 12px;
-      margin-bottom: 15px;
-      min-height: 90px;
-      box-shadow: inset 0 5px 15px rgba(0,0,0,0.6);
+      padding: 25px;
+      border-radius: 15px;
+      margin-bottom: 20px;
+      min-height: 110px;
+      box-shadow: inset 0 8px 20px rgba(0,0,0,0.3);
+      word-break: break-all;
     }
 
     .buttons {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 10px;
+      gap: 12px;
     }
 
     button {
-      padding: 18px;
-      font-size: 1.1rem;
+      padding: 22px 10px;
+      font-size: 1.2rem;
       border: none;
       border-radius: 12px;
       cursor: pointer;
@@ -109,7 +75,7 @@
     }
 
     button:active {
-      transform: scale(0.95);
+      transform: scale(0.92);
     }
 
     .btn-num { background: #33334d; color: white; }
@@ -117,344 +83,197 @@
     .btn-sci { background: #4a4a6a; color: white; }
     .btn-clear { background: #ff3b5c; color: white; }
     .btn-equal { background: #00d26a; color: white; font-weight: bold; }
-
-    /* Custom Color Button - This is what you wanted! */
-    .btn-custom {
-      background: var(--custom-color) !important;
-      color: white !important;
-      font-weight: bold;
-    }
-
-    .btn-custom:hover {
-      background: #8e44ad !important;
-      transform: scale(1.05);
-    }
+    .btn-custom { background: #9b59b6; color: white; font-weight: bold; }
 
     .sidebar {
-      width: 280px;
-      background: #25253a;
+      margin-top: 25px;
+      background: var(--sidebar-bg);
       border-radius: 15px;
-      padding: 15px;
-      color: white;
-      max-height: 520px;
+      padding: 18px;
+      color: var(--text-color);
+      max-height: 380px;
       overflow-y: auto;
     }
 
     .history-item {
-      background: #1e1e2f;
-      padding: 10px;
-      margin-bottom: 8px;
-      border-radius: 8px;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    .history-item:hover { 
-      background: #333; 
-    }
-
-    select, input {
-      width: 100%;
+      background: var(--bg-color);
       padding: 12px;
-      margin: 8px 0;
-      border-radius: 8px;
-      background: #333;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .history-item:hover {
+      background: #4a4a6a;
       color: white;
-      border: none;
     }
 
     .copy-btn {
-      background: var(--custom-color);
+      margin-top: 15px;
+      width: 100%;
+      padding: 15px;
+      background: #9b59b6;
       color: white;
-      padding: 10px 16px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1rem;
+      cursor: pointer;
+    }
+
+    .theme-btn {
+      padding: 10px 18px;
       border: none;
       border-radius: 8px;
-      cursor: pointer;
-      margin-top: 10px;
-      width: 100%;
-    }
-
-    .theme-controls {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-    }
-
-    .theme-btn, .color-picker {
-      padding: 8px 14px;
       background: #333;
       color: white;
-      border: none;
-      border-radius: 8px;
       cursor: pointer;
+      font-size: 1rem;
     }
 
-    .color-picker {
-      width: 50px;
-      height: 35px;
-      padding: 2px;
+    body.light .theme-btn {
+      background: #ddd;
+      color: #333;
     }
   </style>
 </head>
 <body>
 
-<div class="container">
-  <div class="header">
-    <h1>Advanced Calculator</h1>
-    <div class="theme-controls">
-      <button class="theme-btn" onclick="setTheme('dark')">Dark</button>
-      <button class="theme-btn" onclick="setTheme('light')">Light</button>
-      <input type="color" value="#9b59b6" class="color-picker" onchange="changeCustomColor(this.value)" title="Choose Custom Color">
+  <div class="calculator">
+    <div class="header">
+      <h1>Scientific Calculator</h1>
+      <button class="theme-btn" onclick="toggleTheme()">🌙 Dark / Light</button>
+    </div>
+
+    <div class="display" id="display">0</div>
+
+    <div class="buttons">
+      <button class="btn-clear" onclick="clearAll()">C</button>
+      <button class="btn-clear" onclick="deleteLast()">DEL</button>
+      <button class="btn-sci" onclick="append('(')">(</button>
+      <button class="btn-sci" onclick="append(')')">)</button>
+      <button class="btn-op" onclick="append('/')">÷</button>
+
+      <button class="btn-sci" onclick="append('sin(')">sin</button>
+      <button class="btn-sci" onclick="append('cos(')">cos</button>
+      <button class="btn-sci" onclick="append('tan(')">tan</button>
+      <button class="btn-sci" onclick="append('log(')">log</button>
+      <button class="btn-op" onclick="append('*')">×</button>
+
+      <button class="btn-sci" onclick="append('Math.sqrt(')">√</button>
+      <button class="btn-custom" onclick="append('**')">xʸ</button>
+      <button class="btn-sci" onclick="append('Math.PI')">π</button>
+      <button class="btn-sci" onclick="append('Math.E')">e</button>
+      <button class="btn-op" onclick="append('-')">−</button>
+
+      <button class="btn-num" onclick="append('7')">7</button>
+      <button class="btn-num" onclick="append('8')">8</button>
+      <button class="btn-num" onclick="append('9')">9</button>
+      <button class="btn-sci" onclick="append('%')">%</button>
+      <button class="btn-op" onclick="append('+')">+</button>
+
+      <button class="btn-num" onclick="append('4')">4</button>
+      <button class="btn-num" onclick="append('5')">5</button>
+      <button class="btn-num" onclick="append('6')">6</button>
+      <button class="btn-sci" onclick="square()">x²</button>
+      <button class="btn-equal" onclick="calculate()">=</button>
+
+      <button class="btn-num" onclick="append('1')">1</button>
+      <button class="btn-num" onclick="append('2')">2</button>
+      <button class="btn-num" onclick="append('3')">3</button>
+      <button class="btn-num" onclick="append('0')" style="grid-column: span 2;">0</button>
+      <button class="btn-num" onclick="append('.')">.</button>
+    </div>
+
+    <button class="copy-btn" onclick="copyResult()">📋 Copy Result</button>
+
+    <div class="sidebar">
+      <h2>History</h2>
+      <div id="history"></div>
     </div>
   </div>
 
-  <div class="tabs">
-    <button class="tab active" onclick="switchTab(0)">Basic</button>
-    <button class="tab" onclick="switchTab(1)">Scientific</button>
-    <button class="tab" onclick="switchTab(2)">EMI</button>
-    <button class="tab" onclick="switchTab(3)">Unit</button>
-    <button class="tab" onclick="switchTab(4)">Currency</button>
-    <button class="tab" onclick="switchTab(5)">Formulas</button>
-    <button class="tab" onclick="switchTab(6)">Solver</button>
-  </div>
+  <script>
+    let currentInput = "0";
+    let display = document.getElementById("display");
+    let history = [];
 
-  <!-- Scientific Calculator Tab (Most Used) -->
-  <div class="content active" id="tab1">
-    <div class="calculator-grid">
-      <div class="main-calc">
-        <div class="display" id="sci-display">0</div>
-        <div class="buttons">
-          <button class="btn-clear" onclick="sciClear()">C</button>
-          <button class="btn-clear" onclick="sciDelete()">DEL</button>
-          <button class="btn-sci" onclick="sciAppend('(')">(</button>
-          <button class="btn-sci" onclick="sciAppend(')')">)</button>
-          <button class="btn-op" onclick="sciAppend('/')">÷</button>
+    function updateDisplay() {
+      display.textContent = currentInput;
+    }
 
-          <button class="btn-sci" onclick="sciAppend('sin(')">sin</button>
-          <button class="btn-sci" onclick="sciAppend('cos(')">cos</button>
-          <button class="btn-sci" onclick="sciAppend('tan(')">tan</button>
-          <button class="btn-sci" onclick="sciAppend('log(')">log</button>
-          <button class="btn-op" onclick="sciAppend('*')">×</button>
+    function append(value) {
+      if (currentInput === "0" && value !== ".") currentInput = "";
+      currentInput += value;
+      updateDisplay();
+    }
 
-          <button class="btn-sci" onclick="sciAppend('√(')">√</button>
-          <button class="btn-custom" onclick="sciAppend('^')">xʸ</button>   <!-- Purple Button -->
-          <button class="btn-sci" onclick="sciAppend('π')">π</button>
-          <button class="btn-sci" onclick="sciAppend('e')">e</button>
-          <button class="btn-op" onclick="sciAppend('-')">−</button>
+    function clearAll() {
+      currentInput = "0";
+      updateDisplay();
+    }
 
-          <button class="btn-num" onclick="sciAppend('7')">7</button>
-          <button class="btn-num" onclick="sciAppend('8')">8</button>
-          <button class="btn-num" onclick="sciAppend('9')">9</button>
-          <button class="btn-sci" onclick="sciAppend('%')">%</button>
-          <button class="btn-op" onclick="sciAppend('+')">+</button>
+    function deleteLast() {
+      currentInput = currentInput.slice(0, -1) || "0";
+      updateDisplay();
+    }
 
-          <button class="btn-num" onclick="sciAppend('4')">4</button>
-          <button class="btn-num" onclick="sciAppend('5')">5</button>
-          <button class="btn-num" onclick="sciAppend('6')">6</button>
-          <button class="btn-sci" onclick="sciSquare()">x²</button>
-          <button class="btn-equal" onclick="sciCalculate()">=</button>
+    function square() {
+      currentInput = `(${currentInput})**2`;
+      updateDisplay();
+    }
 
-          <button class="btn-num" onclick="sciAppend('1')">1</button>
-          <button class="btn-num" onclick="sciAppend('2')">2</button>
-          <button class="btn-num" onclick="sciAppend('3')">3</button>
-          <button class="btn-num" onclick="sciAppend('0')" style="grid-column: span 2;">0</button>
-          <button class="btn-num" onclick="sciAppend('.')">.</button>
-        </div>
-        <button class="copy-btn" onclick="copyResult()">📋 Copy Result</button>
-      </div>
+    function calculate() {
+      try {
+        let result = eval(currentInput);
+        result = Number(result.toFixed(8));
 
-      <div class="sidebar">
-        <h2>History (Last 10)</h2>
-        <div id="history"></div>
-      </div>
-    </div>
-  </div>
+        history.unshift({ expression: currentInput, result: result });
+        if (history.length > 10) history.pop();
 
-  <!-- Other Tabs (EMI, Unit, Currency, etc.) - Same as before -->
-  <div class="content" id="tab2">
-    <h2>Loan EMI Calculator</h2>
-    <label>Principal Amount (₹)</label>
-    <input type="number" id="principal" value="500000">
-    <label>Annual Interest Rate (%)</label>
-    <input type="number" id="rate" value="8.5" step="0.1">
-    <label>Tenure (Years)</label>
-    <input type="number" id="tenure" value="5">
-    <button onclick="calculateEMI()" style="margin-top:15px;padding:12px;background:#00d26a;color:white;border:none;border-radius:8px;width:100%;">Calculate EMI</button>
-    <div id="emi-result" style="margin-top:20px;font-size:1.4rem;color:#00d26a;"></div>
-  </div>
+        renderHistory();
 
-  <div class="content" id="tab3">
-    <h2>Unit Converter</h2>
-    <select id="unit-type" onchange="updateUnits()">
-      <option value="length">Length</option>
-      <option value="weight">Weight</option>
-      <option value="temp">Temperature</option>
-    </select>
-    <input type="number" id="from-value" value="1" oninput="convertUnit()">
-    <select id="from-unit" onchange="convertUnit()"></select>
-    <select id="to-unit" onchange="convertUnit()"></select>
-    <div id="unit-result" style="font-size:1.5rem;margin-top:15px;color:#00d26a;"></div>
-  </div>
+        currentInput = result.toString();
+        updateDisplay();
+      } catch (e) {
+        currentInput = "Error";
+        updateDisplay();
+        setTimeout(clearAll, 1500);
+      }
+    }
 
-  <div class="content" id="tab4">
-    <h2>Currency Converter</h2>
-    <p id="rate-info" style="color:#aaa;"></p>
-    <input type="number" id="curr-amount" value="100" oninput="convertCurrency()">
-    <select id="from-curr" onchange="convertCurrency()"></select>
-    <select id="to-curr" onchange="convertCurrency()"></select>
-    <div id="curr-result" style="font-size:1.5rem;margin-top:15px;color:#00d26a;"></div>
-    <button onclick="fetchRates()" style="margin-top:10px;">Refresh Rates</button>
-  </div>
+    function renderHistory() {
+      const historyDiv = document.getElementById("history");
+      historyDiv.innerHTML = "";
 
-  <div class="content" id="tab5">
-    <h2>Maths Formula Helper</h2>
-    <select id="formula-select" onchange="showFormula()">
-      <option value="">Select Formula</option>
-      <option value="area-circle">Area of Circle</option>
-      <option value="percentage">Percentage</option>
-      <option value="simple-interest">Simple Interest</option>
-    </select>
-    <div id="formula-display" style="margin-top:15px;background:#25253a;padding:15px;border-radius:10px;"></div>
-  </div>
+      history.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "history-item";
+        div.innerHTML = `<strong>${item.expression}</strong><br>= ${item.result}`;
+        div.onclick = () => {
+          currentInput = item.result.toString();
+          updateDisplay();
+        };
+        historyDiv.appendChild(div);
+      });
+    }
 
-  <div class="content" id="tab6">
-    <h2>Equation Solver</h2>
-    <input type="text" id="equation" placeholder="e.g. 2x + 3 = 7" style="width:80%;">
-    <button onclick="solveEquation()">Solve</button>
-    <div id="solve-result" style="margin-top:15px;font-size:1.3rem;"></div>
-  </div>
-</div>
+    function copyResult() {
+      navigator.clipboard.writeText(display.textContent).then(() => {
+        alert("✅ Result copied to clipboard!");
+      });
+    }
 
-<script>
-// Variables
-let sciCurrent = '0';
-let sciDisplay = document.getElementById('sci-display');
-let history = [];
+    function toggleTheme() {
+      document.body.classList.toggle("light");
+    }
 
-// Theme Functions
-function setTheme(theme) {
-  if (theme === 'light') {
-    document.body.style.background = 'linear-gradient(135deg, #a1c4fd, #c2e9fb)';
-  } else {
-    location.reload(); // back to dark
-  }
-}
-
-function changeCustomColor(color) {
-  document.documentElement.style.setProperty('--custom-color', color);
-}
-
-// Tab Switching
-function switchTab(n) {
-  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-  document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
-  document.querySelectorAll('.tab')[n].classList.add('active');
-  document.getElementById('tab' + n).classList.add('active');
-}
-
-// Scientific Calculator Functions
-function sciAppend(val) {
-  if (sciCurrent === '0' && val !== '.') sciCurrent = '';
-  sciCurrent += val;
-  sciDisplay.textContent = sciCurrent;
-}
-
-function sciClear() {
-  sciCurrent = '0';
-  sciDisplay.textContent = '0';
-}
-
-function sciDelete() {
-  sciCurrent = sciCurrent.slice(0, -1) || '0';
-  sciDisplay.textContent = sciCurrent;
-}
-
-function sciSquare() {
-  sciCurrent = `(${sciCurrent})**2`;
-  sciDisplay.textContent = sciCurrent;
-}
-
-function sciCalculate() {
-  try {
-    let expr = sciCurrent
-      .replace(/sin/g, 'Math.sin')
-      .replace(/cos/g, 'Math.cos')
-      .replace(/tan/g, 'Math.tan')
-      .replace(/log/g, 'Math.log10')
-      .replace(/√/g, 'Math.sqrt')
-      .replace(/π/g, 'Math.PI')
-      .replace(/e/g, 'Math.E')
-      .replace(/\^/g, '**');
-
-    let result = eval(expr);
-    result = Number(result.toFixed(8));
-
-    addToHistory(sciCurrent, result);
-    sciCurrent = result.toString();
-    sciDisplay.textContent = sciCurrent;
-  } catch(e) {
-    sciDisplay.textContent = 'Error';
-    setTimeout(sciClear, 1500);
-  }
-}
-
-function addToHistory(expr, res) {
-  history.unshift({expr, res});
-  if (history.length > 10) history.pop();
-  renderHistory();
-}
-
-function renderHistory() {
-  const histDiv = document.getElementById('history');
-  histDiv.innerHTML = '';
-  history.forEach(item => {
-    const d = document.createElement('div');
-    d.className = 'history-item';
-    d.innerHTML = `<strong>${item.expr}</strong> = ${item.res}`;
-    d.onclick = () => {
-      sciCurrent = item.res.toString();
-      sciDisplay.textContent = sciCurrent;
+    // Initialize
+    window.onload = () => {
+      updateDisplay();
+      renderHistory();
     };
-    histDiv.appendChild(d);
-  });
-}
-
-function copyResult() {
-  navigator.clipboard.writeText(sciDisplay.textContent).then(() => {
-    alert('Result copied to clipboard!');
-  });
-}
-
-// EMI Calculator
-function calculateEMI() {
-  const p = parseFloat(document.getElementById('principal').value);
-  const r = parseFloat(document.getElementById('rate').value) / 1200;
-  const n = parseFloat(document.getElementById('tenure').value) * 12;
-
-  if (!p || !r || !n) return alert("Please fill all fields");
-
-  const emi = (p * r * Math.pow(1+r, n)) / (Math.pow(1+r, n) - 1);
-  document.getElementById('emi-result').innerHTML = `
-    Monthly EMI: <strong>₹${emi.toFixed(2)}</strong><br>
-    Total Amount: <strong>₹${(emi * n).toFixed(2)}</strong>
-  `;
-}
-
-// Unit Converter, Currency, Formulas, Solver (same as previous version)
-function updateUnits() { /* ... same logic as before ... */ }
-function convertUnit() { /* ... */ }
-async function fetchRates() { /* ... */ }
-function convertCurrency() { /* ... */ }
-function showFormula() { /* ... */ }
-function solveEquation() { /* ... */ }
-
-// Initialize
-window.onload = () => {
-  renderHistory();
-  // You can call other init functions here if needed
-  setTimeout(() => switchTab(1), 100); // Open Scientific tab by default
-};
-</script>
+  </script>
 
 </body>
 </html>
